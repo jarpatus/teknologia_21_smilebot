@@ -6,3 +6,9 @@ Raspberry PI 3/4
 
 # Installation
 git clone https://github.com/jarpatus/teknologia_21_smilebot.git
+cd teknologia_21_smilebot
+python3 
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt 
+
