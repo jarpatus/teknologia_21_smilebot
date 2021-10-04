@@ -26,4 +26,4 @@ TODO
 
 
 # Run
-pigpiod
+pigpiod -s 2
