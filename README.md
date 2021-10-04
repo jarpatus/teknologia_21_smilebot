@@ -23,3 +23,7 @@ TBD
 # Push
 pip freeze > requirements.txt \n
 TODO
+
+
+# Run
+pigpiod
