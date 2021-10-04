@@ -1,5 +1,5 @@
 # Introduction
-Software for Teknologia 21 Amazing Robots -compatition robot "smilebot".
+Software for Teknologia 21 Amazing Robots -competition robot "smilebot".
 
 # Required hardware
 Raspberry PI 3/4
