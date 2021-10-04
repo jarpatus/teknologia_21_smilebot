@@ -5,13 +5,12 @@ Software for Teknologia 21 Amazing Robots -competition robot "smilebot".
 Raspberry PI 3/4
 
 # Required software
-python3 \
-python3-venv \
-git
+OS: Raspbian or equivalent
+Packages: git python3 python3-venv pigpio
 
 # Installation
 sudo apt-get update \
-sudo apt-get -y install python3 python3-venv git \
+sudo apt-get -y install git python3 python3-venv pigpio \
 git clone https://github.com/jarpatus/teknologia_21_smilebot.git \
 cd teknologia_21_smilebot \
 python3 -m venv env \
