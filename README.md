@@ -24,12 +24,11 @@ git pull
 pigpiod -s 2
 
 # Contribute
-git config --global user.email "you@example.com"
-git config --global user.name "Your Name"
-git config --global credential.helper store
-pip freeze > requirements.txt \n
-git add --all
-git commit
+git config --global user.email "you@example.com" \
+git config --global user.name "Your Name" \
+git config --global credential.helper store \
+pip freeze > requirements.txt \
+git add --all \
+git commit \
 git push
-TODO
 
