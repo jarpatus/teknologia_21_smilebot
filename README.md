@@ -18,7 +18,7 @@ source env/bin/activate \
 pip install -r requirements.txt 
 
 # Update 
-TBD
+git pull
 
 # Execute
 pigpiod -s 2
