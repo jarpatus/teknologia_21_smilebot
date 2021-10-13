@@ -20,10 +20,16 @@ pip install -r requirements.txt
 # Update 
 TBD
 
-# Push
+# Execute
+pigpiod -s 2
+
+# Contribute
+git config --global user.email "you@example.com"
+git config --global user.name "Your Name"
+git config --global credential.helper store
 pip freeze > requirements.txt \n
+git add --all
+git commit
+git push
 TODO
 
-
-# Run
-pigpiod -s 2
