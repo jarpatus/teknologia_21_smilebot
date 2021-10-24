@@ -11,8 +11,8 @@ OS: Raspbian or equivalent
 sudo apt-get update \
 sudo apt-get -y install git python3 python3-venv \
 sudo apt-get -y install pigpio \
-sudo apt-get -y install libhdf5-dev libhdf5-serial-dev libatlas-base-dev libjasper-dev libqtgui4 libqt4-test libilmbase23 libharfbuzz-dev  \
-#sudo apt-get -y install libhdf5-dev libhdf5-serial-dev libatlas-base-dev libjasper-dev libqtgui4 libqt4-test python3-numpy libblas-dev liblapack-dev \
+sudo apt-get -y install libhdf5-dev libhdf5-serial-dev libatlas-base-dev libjasper-dev libqtgui4 libqt4-test \
+sudo apt-get -y install libharfbuzz-dev libilmbase23 libopenexr23 libavcodec58 libavformat58 libswscale5 \
 git clone https://github.com/jarpatus/teknologia_21_smilebot.git \
 cd teknologia_21_smilebot \
 python3 -m venv env \
