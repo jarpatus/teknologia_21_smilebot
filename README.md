@@ -16,15 +16,15 @@ git clone https://github.com/jarpatus/teknologia_21_smilebot.git \
 cd teknologia_21_smilebot \
 python3 -m venv env \
 source env/bin/activate \
-wget -P /tmp https://github.com/lhelontra/tensorflow-on-arm/releases/download/v2.0.0/tensorflow-2.0.0-cp37-none-linux_armv7l.whl
-pip3 install pigpio RPi.GPIO
-pip3 install /tmp/tensorflow-2.0.0-cp37-none-linux_armv7l.whl keras
+wget -P /tmp https://github.com/lhelontra/tensorflow-on-arm/releases/download/v2.0.0/tensorflow-2.0.0-cp37-none-linux_armv7l.whl \
+pip3 install pigpio RPi.GPIO \
+pip3 install /tmp/tensorflow-2.0.0-cp37-none-linux_armv7l.whl keras \
 
 # Update 
-git pull
+git pull \
 
 # Execute
-pigpiod -s 2
+pigpiod -s 2 \
 
 # Contribute
 git config --global user.email "you@example.com" \
@@ -33,5 +33,5 @@ git config --global credential.helper store \
 pip freeze > requirements.txt \
 git add --all \
 git commit \
-git push
+git push \
 
