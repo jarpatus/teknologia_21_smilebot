@@ -11,14 +11,15 @@ OS: Raspbian or equivalent
 sudo apt-get update \
 sudo apt-get -y install git python3 python3-venv \
 sudo apt-get -y install pigpio \
-#sudo apt-get -y install libhdf5-dev libhdf5-serial-dev libatlas-base-dev libjasper-dev libqtgui4 libqt4-test python3-numpy libblas-dev liblapack-dev \
+sudo apt-get -y install libhdf5-dev libhdf5-serial-dev libatlas-base-dev libjasper-dev libqtgui4 libqt4-test libblas-dev liblapack-dev gfortran \
+sudo apt-get -y install libharfbuzz-dev libilmbase23 libopenexr23 libavcodec58 libavformat58 libswscale5 \
 git clone https://github.com/jarpatus/teknologia_21_smilebot.git \
 cd teknologia_21_smilebot \
 python3 -m venv env \
 source env/bin/activate \
 wget -P /tmp https://github.com/lhelontra/tensorflow-on-arm/releases/download/v2.0.0/tensorflow-2.0.0-cp37-none-linux_armv7l.whl \
 pip3 install pigpio RPi.GPIO \
-pip3 install /tmp/tensorflow-2.0.0-cp37-none-linux_armv7l.whl keras
+pip3 install opencv-contrib-python==4.1.0.25 h5py==2.10.0 keras /tmp/tensorflow-2.0.0-cp37-none-linux_armv7l.whl scipy
 
 # Update 
 git pull
