@@ -1,35 +1,37 @@
 import pigpio
-import RPi.GPIO as GPIO
 import time
 
 # Settings
-dir_pin = 24
-step_pin = 18
-enable_pin = 4
-mode_pins = (21, 22, 27)
-steps = 10240
-stepdelay = 0.00001
+m1_mode_pin1 = 16
+m1_mode_pin2 = 17
+m1_mode_pin3 = 20
+m1_enable_pin = 12
+m1_dir_pin = 13
+m1_step_pin = 19
+m2_mode_pin1 = 21
+m2_mode_pin2 = 22
+m2_mode_pin3 = 27
+m2_enable_pin = 4
+m2_dir_pin = 24
+m2_step_pin = 18
 
-
-
-
+# Connect to pigpio
 pi = pigpio.pi()
 
+# Setup GPIO pins
+pi.set_mode(m1_mode_pin1, pigpio.OUTPUT)
+pi.set_mode(m1_mode_pin2, pigpio.OUTPUT)
+pi.set_mode(m1_mode_pin2, pigpio.OUTPUT)
+pi.set_mode(m1_enable_pin, pigpio.OUTPUT)
+pi.set_mode(m1_dir_pin, pigpio.OUTPUT)
+pi.set_mode(m1_step_pin, pigpio.OUTPUT)
+pi.set_mode(m2_mode_pin1, pigpio.OUTPUT)
+pi.set_mode(m2_mode_pin2, pigpio.OUTPUT)
+pi.set_mode(m2_mode_pin2, pigpio.OUTPUT)
+pi.set_mode(m2_enable_pin, pigpio.OUTPUT)
+pi.set_mode(m2_dir_pin, pigpio.OUTPUT)
+pi.set_mode(m2_step_pin, pigpio.OUTPUT)
 
-
-
-# Setup GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-GPIO.setup(dir_pin, GPIO.OUT)
-GPIO.setup(step_pin, GPIO.OUT)
-GPIO.setup(enable_pin, GPIO.OUT)
-GPIO.setup(mode_pins, GPIO.OUT)
-
-# Stop
-GPIO.output(enable_pin, 1)
-#pi.write(enable_pin, 0)
-
-
-pi.stop()
-
+# Disable motors
+pi.write(m1_enable_pin, 0)
+pi.write(m2_enable_pin, 0)

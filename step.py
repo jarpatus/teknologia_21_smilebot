@@ -56,6 +56,45 @@ pi.write(m2_dir_pin, 0)
 
 # Drive
 
+def ramp(pin, start_freq, stop_freq, ramp_time, step_time):
+	pi.wave_clear()
+	waves = []
+
+	steps = int(ramp_time/step_time)
+	step_freq = (stop_freq-start_freq)/steps
+	for i in range(steps+1):
+		f = int(start_freq+i*step_freq)
+		print(f)
+		wave = []
+		wave.append(pigpio.pulse(1<<pin, 0, int(500000/f)))
+		wave.append(pigpio.pulse(0, 1<<pin, int(500000/f)))
+		pi.wave_add_generic(wave)
+		waves.append(pi.wave_create())
+
+#	for i in range(steps+1):
+#		pi.wave_send_repeat(waves[i])
+#		time.sleep(step_time)
+
+	wavechain = []
+#	for i in range(steps+1):
+#		steps = 300
+#		x = steps & 255
+#		y = steps >> 8
+#		wavechain += [255, 0, waves[i], 255, 1, x, y]
+
+	wavechain = [
+		255, 0, 
+		waves[4],
+		
+	]
+
+	#pi.wave_send_repeat(waves[4])
+#	pi.wave_chain(wavechain)
+
+
+
+#	pi.wave_send_repeat(waves[400])
+
 
 def start():
 	print("Start motors")
@@ -70,6 +109,19 @@ def stop():
 
 
 def fwd(mm, pps):
+	steps = mm/step_length
+	t = steps/pps*25
+	print("Drive forward", mm, "mm @", pps, "pps,", steps, "steps,", time, "s")
+	pi.write(m1_dir_pin, 1)
+	pi.write(m2_dir_pin, 0)
+	pi.write(m1_enable_pin, 1)
+	pi.write(m2_enable_pin, 1)
+	ramp(m1_step_pin, 100, 500, 2, 0.2)
+
+
+
+
+def xfwd(mm, pps):
 	steps = mm/step_length
 	t = steps/pps*25
 	print("Drive forward", mm, "mm @", pps, "pps,", steps, "steps,", time, "s")
@@ -100,10 +152,11 @@ def bwd(mm, pps):
 
 try:
 	fwd(200, 1000)
-	time.sleep(0.5)
-	bwd(200, 1000)
-	while True:
-		time.sleep(0.5)
+	time.sleep(3)
+	#bwd(200, 1000)
+	stop()
+	#while True:
+	#	time.sleep(0.5)
 except Exception as e:
 	print(e)
 finally:
