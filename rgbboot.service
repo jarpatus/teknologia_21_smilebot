@@ -1,0 +1,12 @@
+[Unit]
+Description=demo service
+After=multi-user.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/pi/teknologia_21_smilebot
+ExecStart=/home/pi/teknologia_21_smilebot/env/bin/python rgbboot.py
+KillSignal=SIGINT
+
+[Install]
+WantedBy=sysinit.target

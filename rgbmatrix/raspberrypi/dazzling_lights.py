@@ -67,8 +67,16 @@ def flash():
         firsthue = firsthue + 11
 
 
-if __name__ == "__main__":
-    rr = RGB_Matrix(0X74)
+def rgbblank():
+    fill = (144,192,22)
 
-    while True:
-        flash()
+
+if __name__ == "__main__":
+    try:
+        rr = RGB_Matrix(0X74)
+        while True:
+            flash()
+    except Exception as e:
+        print(e)
+    finally:
+        rr = RGB_Matrix(0X74)

@@ -54,8 +54,6 @@ pi.write(m1_dir_pin, 1)
 pi.write(m2_dir_pin, 0)
 
 
-# Drive
-
 def ramp(pin, start_freq, stop_freq, ramp_time, step_time):
 	pi.wave_clear()
 	waves = []
@@ -96,18 +94,21 @@ def ramp(pin, start_freq, stop_freq, ramp_time, step_time):
 #	pi.wave_send_repeat(waves[400])
 
 
+# Start motors
 def start():
 	print("Start motors")
 	pi.write(m1_enable_pin, 1)
 	pi.write(m2_enable_pin, 1)
 
 
+# Stop motors
 def stop():
 	print("Stop motors")
 	pi.write(m1_enable_pin, 0)
 	pi.write(m2_enable_pin, 0)
 
 
+# Drive forwards
 def fwd(mm, pps):
 	steps = mm/step_length
 	t = steps/pps*25
@@ -117,8 +118,6 @@ def fwd(mm, pps):
 	pi.write(m1_enable_pin, 1)
 	pi.write(m2_enable_pin, 1)
 	ramp(m1_step_pin, 100, 500, 2, 0.2)
-
-
 
 
 def xfwd(mm, pps):
@@ -136,6 +135,7 @@ def xfwd(mm, pps):
 	pi.write(m2_enable_pin, 0)
 
 
+# Drive backwards
 def bwd(mm, pps):
 	steps = mm/step_length
 	t = steps/pps*25
@@ -150,6 +150,7 @@ def bwd(mm, pps):
 	pi.write(m1_enable_pin, 0)
 	pi.write(m2_enable_pin, 0)
 
+# Main
 try:
 	fwd(200, 1000)
 	time.sleep(3)

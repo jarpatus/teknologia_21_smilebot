@@ -45,4 +45,4 @@ if __name__ == "__main__":
             during = time.time() - start
             if during >= 1/28.0:
                 break
-        # time.sleep(0.001)
+            time.sleep(0.01)
