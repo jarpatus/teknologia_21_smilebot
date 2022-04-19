@@ -54,25 +54,25 @@ pi.write(m1_dir_pin, 1)
 pi.write(m2_dir_pin, 0)
 
 
-# Drive
-
-
+# Start motors
 def start():
 	print("Start motors")
 	pi.write(m1_enable_pin, 1)
 	pi.write(m2_enable_pin, 1)
 
 
+# Stop motors
 def stop():
 	print("Stop motors")
 	pi.write(m1_enable_pin, 0)
 	pi.write(m2_enable_pin, 0)
 
 
+# Drive forwards
 def fwd(mm, pps):
 	steps = mm/step_length
 	t = steps/pps*25
-	print("Drive forward", mm, "mm @", pps, "pps,", steps, "steps,", time, "s")
+	print("Drive forward", mm, "mm @", pps, "pps,", steps, "steps,", t, "s")
 	pi.set_PWM_frequency(m1_step_pin, pps)
 	pi.set_PWM_frequency(m2_step_pin, pps)
 	pi.write(m1_dir_pin, 1)
@@ -84,10 +84,11 @@ def fwd(mm, pps):
 	pi.write(m2_enable_pin, 0)
 
 
+# Drive backwards
 def bwd(mm, pps):
 	steps = mm/step_length
 	t = steps/pps*25
-	print("Drive backward", mm, "mm @", pps, "pps,", steps, "steps,", time, "s")
+	print("Drive backward", mm, "mm @", pps, "pps,", steps, "steps,", t, "s")
 	pi.set_PWM_frequency(m1_step_pin, pps)
 	pi.set_PWM_frequency(m2_step_pin, pps)
 	pi.write(m1_dir_pin, 0)
@@ -98,10 +99,11 @@ def bwd(mm, pps):
 	pi.write(m1_enable_pin, 0)
 	pi.write(m2_enable_pin, 0)
 
+# Main
 try:
-	fwd(200, 1000)
+	fwd(100, 1000)
 	time.sleep(0.5)
-	bwd(200, 1000)
+	bwd(100, 1000)
 	while True:
 		time.sleep(0.5)
 except Exception as e:
