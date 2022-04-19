@@ -27,8 +27,8 @@ pip3 install pigpio RPi.GPIO \
 pip3 install numpy==1.21.4 opencv-contrib-python==4.1.0.25 h5py==2.10.0 keras /tmp/tensorflow-2.0.0-cp37-none-linux_armv7l.whl scipy \
 pip3 install smbus pillow
 
-sudo cat rgbboot.service > /etc/systemd/system/rgbboot.service \
-sudo ln -s /etc/systemd/system/rgbboot.service /etc/systemd/system/multi-user.target.wants/
+sudo sh -c "cat rgbboot.service > /etc/systemd/system/rgbboot.service" \
+sudo sudo systemctl enable rgbboot
 
 # Update 
 git pull
@@ -44,4 +44,3 @@ pip freeze > requirements.txt \
 git add --all \
 git commit \
 git push
-
