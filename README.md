@@ -7,6 +7,8 @@ Raspberry PI 3/4
 # Software
 OS: Raspbian or equivalent (developed using Raspbian 10.9)
 
+For rgbmatrix enable I2C using raspi.config . Disable SPI and 1-Wire if enabled as they may interfere with GPIOs used by motor shield. 
+
 # Install
 sudo apt-get update \
 sudo apt-get -y install git python3 python3-venv \
