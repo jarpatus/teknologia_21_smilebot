@@ -4,38 +4,37 @@ import os
 import time
 #import picamera
 import RPi.GPIO as GPIO
-
+from rgbhappy import RGBHappy
 from tensorflow.keras import Sequential #for emotion recognition
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 
+# Initialize motors
 GPIO.setmode(GPIO.BCM)
-
 GPIO.setup(18, GPIO.OUT)
 GPIO.setup(24, GPIO.OUT)
-
 pwm = GPIO.PWM(18, 100)
 GPIO.output(24, GPIO.LOW)
 
-# Load the model
+# Initialize RGB matrix
+rgb = RGBHappy()
+rgb.neutral()
+
+# Initialize face and emotion recognition 
 model = Sequential()
 classifier = load_model('ferjj.h5') # This model has a set of 6 classes
-# We have 6 labels for the model
 class_labels = {0: 'Angry', 1: 'Fear', 2: 'Happy', 3: 'Neutral', 4: 'Sad', 5: 'Surprise'}
 classes = list(class_labels.values())
-# print(class_labels)
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml') 
 
-
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml') #for tracking & emotion
-
+# Initialize camera 
 cap = cv2.VideoCapture(0)   #tracking
 cap.set(3,640) # set Width
 cap.set(4,480) # set Height
-
 #with picamera.PiCamera() as camera:
 #    camera.resolution = (1024, 768)
 #    camera.start_preview()
-    #Camera warm-up time
+# Camera warm-up time
 #    time.sleep(2)
 #    camera.capture('foo.jpg')
 
@@ -44,6 +43,7 @@ def face_detector_video(img):
     # Convert image to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+
     if faces is ():
         return (0, 0, 0, 0), np.zeros((48, 48), np.uint8), img
 
@@ -79,15 +79,19 @@ def emotionVideo(cap):
         preds = classifier.predict(roi)[0]
         label = class_labels[preds.argmax()]
         print(label)
-        #if label == "Happy":
-            #monitor happy
-        #elif label == "Sad":
-            #monitor sad
-        #elif label == "Angry":
-            #monitor angry
-        #elif label == "Surprise":
-            #monitor surprise
-
+        if label == "Angry":
+            rgb.angry()
+        elif label == "Fear":
+            rgb.fear()
+        elif label == "Happy":
+            rgb.happy()
+        elif label == "Neutral":
+            rgb.neutral()
+        elif label == "Sad":
+            rgb.sad()
+        elif label == "Surprise":
+            rgb.surprise()
+ 
         #label_position = (rect[0] + rect[1]//50, rect[2] + rect[3]//50)
         #text_on_detected_boxes(label, label_position[0], label_position[1], image) # You can use this function for your another opencv projects.
         fps = cap.get(cv2.CAP_PROP_FPS)
@@ -122,12 +126,12 @@ def facetrack():
                 emotionVideo(cap)
             elif x > 240:
                 GPIO.output(24, GPIO.LOW)
-                pwm.start(10)
+                #pwm.start(10)
                 pwm.ChangeFrequency(((x-240)*10)^2)
 
             elif x < 220:
                 GPIO.output(24, GPIO.HIGH)
-                pwm.start(10)
+                #pwm.start(10)
                 pwm.ChangeFrequency(((220-x)*10)^2)
                 
             #if y in range(60,140):
@@ -143,13 +147,13 @@ def facetrack():
         ret, frame = cap.read()
         rect, face, image = face_detector_video(frame)
         if np.sum([face]) == 0.0:
-            pwm.start(10)
+            #pwm.start(10)
             pwm.ChangeFrequency(1000)
-    
     
         k = cv2.waitKey(30) & 0xff
         if k == 27: # press 'ESC' to quit
             break
+            
 #try:
 facetrack()
 #except:

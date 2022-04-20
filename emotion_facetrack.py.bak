@@ -2,20 +2,26 @@ import numpy as np
 import cv2
 import os
 import time
-import picamera
+#import picamera
 import RPi.GPIO as GPIO
-
+from rgbhappy import RGBHappy
 from tensorflow.keras import Sequential #for emotion recognition
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 
+# Initialize motors
 GPIO.setmode(GPIO.BCM)
-
 GPIO.setup(18, GPIO.OUT)
 GPIO.setup(24, GPIO.OUT)
-
 pwm = GPIO.PWM(18, 100)
 GPIO.output(24, GPIO.LOW)
+
+# Initialize RGB matrix
+rgb = RGBHappy()
+rgb.neutral()
+
+# Initialize face recognition 
+
 
 # Load the model
 model = Sequential()
@@ -32,12 +38,12 @@ cap = cv2.VideoCapture(0)   #tracking
 cap.set(3,640) # set Width
 cap.set(4,480) # set Height
 
-with picamera.PiCamera() as camera:
-    camera.resolution = (1024, 768)
-    camera.start_preview()
+#with picamera.PiCamera() as camera:
+#    camera.resolution = (1024, 768)
+#    camera.start_preview()
     #Camera warm-up time
-    time.sleep(2)
-    camera.capture('foo.jpg')
+#    time.sleep(2)
+#    camera.capture('foo.jpg')
 
 
 def face_detector_video(img):
