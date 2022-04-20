@@ -24,7 +24,7 @@ python3 -m venv env \
 source env/bin/activate
 
 wget -P /tmp https://github.com/lhelontra/tensorflow-on-arm/releases/download/v2.0.0/tensorflow-2.0.0-cp37-none-linux_armv7l.whl \
-pip3 install pigpio RPi.GPIO picamera \
+pip3 install pigpio RPi.GPIO \
 pip3 install numpy==1.21.4 opencv-contrib-python==4.1.0.25 h5py==2.10.0 keras /tmp/tensorflow-2.0.0-cp37-none-linux_armv7l.whl scipy \
 pip3 install smbus pillow
 
