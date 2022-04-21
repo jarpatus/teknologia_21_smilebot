@@ -7,6 +7,25 @@ class RGBHappy():
         self.rr = RGB_Matrix(0X74)
    
   
+    def q(self):
+        colors = [
+            (0,0,0),
+            (255,255,255),
+            (255,255,255),
+        ]
+        shape = [
+            [0,0,0,1,0,0,0,0],
+            [0,0,1,0,1,0,0,0],
+            [0,0,0,0,1,0,0,0],
+            [0,0,0,0,1,0,0,0],
+            [0,0,0,1,0,0,0,0],
+            [0,0,0,1,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,1,0,0,0,0],
+        ]
+        self.draw(colors, shape)
+
+
     def neutral(self):
         colors = [
             (0,0,0),
@@ -23,10 +42,7 @@ class RGBHappy():
             [0,1,1,1,1,1,1,0],
             [0,0,0,0,0,0,0,0],
         ]
-        for y in range(len(shape)):
-            for x in range(len(shape[y])):
-                self.rr.draw_point((y, x), colors[shape[y][x]])
-        self.rr.display()
+        self.draw(colors, shape)
 
 
     def happy(self):
@@ -45,10 +61,7 @@ class RGBHappy():
             [0,1,0,0,0,0,1,0],
             [0,0,1,1,1,1,0,0],
         ]
-        for y in range(len(shape)):
-            for x in range(len(shape[y])):
-                self.rr.draw_point((y, x), colors[shape[y][x]])
-        self.rr.display()
+        self.draw(colors, shape)
 
 
     def sad(self):
@@ -66,11 +79,8 @@ class RGBHappy():
             [0,0,1,1,1,1,0,0],
             [0,1,0,0,0,0,1,0],
         ]
-        for y in range(len(shape)):
-            for x in range(len(shape[y])):
-                self.rr.draw_point((y, x), colors[shape[y][x]])
-        self.rr.display()
-        
+        self.draw(colors, shape)
+       
         
     def angry(self):
         colors = [
@@ -87,10 +97,7 @@ class RGBHappy():
             [0,0,1,1,1,1,0,0],
             [0,1,0,0,0,0,1,0],
         ]
-        for y in range(len(shape)):
-            for x in range(len(shape[y])):
-                self.rr.draw_point((y, x), colors[shape[y][x]])
-        self.rr.display()
+        self.draw(colors, shape)
     
     
     def fear(self):
@@ -108,22 +115,47 @@ class RGBHappy():
             [0,0,1,1,1,1,0,0],
             [0,1,0,0,0,0,1,0],
         ]
+        self.draw(colors, shape)
+
+
+    def surprise(self):
+        colors = [
+            (0,0,0),
+            (64,64,255),
+        ]
+        shape = [
+            [0,1,0,0,0,0,1,0],
+            [1,0,1,0,0,1,0,1],
+            [0,1,0,0,0,0,1,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,1,1,0,0,0],
+            [0,0,1,0,0,1,0,0],
+            [0,0,1,0,0,1,0,0],
+            [0,0,0,1,1,0,0,0],
+        ]
+        self.draw(colors, shape)
+        
+    def draw(self, colors, shape):
         for y in range(len(shape)):
             for x in range(len(shape[y])):
-                self.rr.draw_point((y, x), colors[shape[y][x]])
+                self.rr.draw_point((y, 7-x), colors[shape[y][x]])
         self.rr.display()
 
 
 if __name__ == "__main__":
     rgb = RGBHappy()
     while True:
-        rgb.neutral()
+        rgb.q()
         time.sleep(0.5)
         rgb.happy()
+        time.sleep(0.5)
+        rgb.neutral()
         time.sleep(0.5)
         rgb.sad()
         time.sleep(0.5)
         rgb.angry()
         time.sleep(0.5)
         rgb.fear()
+        time.sleep(0.5)
+        rgb.surprise()
         time.sleep(0.5)

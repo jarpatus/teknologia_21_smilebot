@@ -2,164 +2,104 @@ import numpy as np
 import cv2
 import os
 import time
-#import picamera
-import RPi.GPIO as GPIO
+from pwmdrive import PWMDrive
 from rgbhappy import RGBHappy
 from tensorflow.keras import Sequential #for emotion recognition
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 
-# Initialize motors
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(18, GPIO.OUT)
-GPIO.setup(24, GPIO.OUT)
-pwm = GPIO.PWM(18, 100)
-GPIO.output(24, GPIO.LOW)
 
-# Initialize RGB matrix
-rgb = RGBHappy()
-rgb.neutral()
+class Facetrack():
 
-# Initialize face and emotion recognition 
-model = Sequential()
-classifier = load_model('ferjj.h5') # This model has a set of 6 classes
-class_labels = {0: 'Angry', 1: 'Fear', 2: 'Happy', 3: 'Neutral', 4: 'Sad', 5: 'Surprise'}
-classes = list(class_labels.values())
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml') 
+    # Constructor
+    def __init__(self):
 
-# Initialize camera 
-cap = cv2.VideoCapture(0)   #tracking
-cap.set(3,640) # set Width
-cap.set(4,480) # set Height
-#with picamera.PiCamera() as camera:
-#    camera.resolution = (1024, 768)
-#    camera.start_preview()
-# Camera warm-up time
-#    time.sleep(2)
-#    camera.capture('foo.jpg')
+        # Initialize motors
+        self.pwm = PWMDrive()
+        self.pwm.stop()
+        
+        # Initialize RGB matrix
+        self.rgb = RGBHappy()
+        self.rgb.q()
+
+        # Initialize camera
+        self.cap = cv2.VideoCapture(0)
+        self.cap.set(3, 640)
+        self.cap.set(4, 480)
+        
+        # Initialize face and emotion recognition 
+        self.classifier = load_model('ferjj.h5') # This model has a set of 6 classes
+        self.class_labels = {0: 'Angry', 1: 'Fear', 2: 'Happy', 3: 'Neutral', 4: 'Sad', 5: 'Surprise'}
+        self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml') 
 
 
-def face_detector_video(img):
-    # Convert image to grayscale
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-
-    if faces is ():
-        return (0, 0, 0, 0), np.zeros((48, 48), np.uint8), img
-
-    for (x, y, w, h) in faces:
-        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), thickness=2)
-        roi_gray = gray[y:y + h, x:x + w]
-
-    roi_gray = cv2.resize(roi_gray, (48, 48), interpolation=cv2.INTER_AREA)
-
-    return (x, w, y, h), roi_gray, img
+    # Detects face from given still image (can detect multiple but returns only one)
+    def face_detect(self, img):
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = self.face_cascade.detectMultiScale(gray, 1.3, 5)        
+        if faces is (): 
+            return None, None, None, None, None
+        #print(len(faces), "faces detected: ", faces)
+        for (x, y, w, h) in faces:
+            roi_gray = gray[y:y + h, x:x + w]
+        roi_gray = cv2.resize(roi_gray, (48, 48), interpolation=cv2.INTER_AREA)
+        return x, w, y, h, roi_gray
 
 
-def emotionVideo(cap):
-    ret, frame = cap.read()
-    rect, face, image = face_detector_video(frame)
-    [x,w,y,h] = rect
-
-    #frame = cv2.flip(frame, -1)     #facetrack 
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(
-        gray,
-        scaleFactor=1.2,
-        minNeighbors=5,
-        minSize=(20,20)
-        )
-            
-    if np.sum([face]) != 0.0:
+    # Detects emotions from given face
+    def emotion_detect(self, face):              
         roi = face.astype("float") / 255.0
         roi = img_to_array(roi)
         roi = np.expand_dims(roi, axis=0)
-
-        # make a prediction on the ROI, then lookup the class
-        preds = classifier.predict(roi)[0]
-        label = class_labels[preds.argmax()]
+        preds = self.classifier.predict(roi)[0]
+        label = self.class_labels[preds.argmax()]
         print(label)
-        if label == "Angry":
-            rgb.angry()
-        elif label == "Fear":
-            rgb.fear()
-        elif label == "Happy":
-            rgb.happy()
-        elif label == "Neutral":
-            rgb.neutral()
-        elif label == "Sad":
-            rgb.sad()
-        elif label == "Surprise":
-            rgb.surprise()
+        if label == "Angry": self.rgb.angry()
+        elif label == "Fear": self.rgb.fear()
+        elif label == "Happy": self.rgb.happy()
+        elif label == "Neutral": self.rgb.neutral()
+        elif label == "Sad": self.rgb.sad()
+        elif label == "Surprise": self.rgb.surprise()
  
-        #label_position = (rect[0] + rect[1]//50, rect[2] + rect[3]//50)
-        #text_on_detected_boxes(label, label_position[0], label_position[1], image) # You can use this function for your another opencv projects.
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        #cv2.putText(image, str(fps),(5, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        #ret, img = cap.read()
-
-
-def facetrack():
-    print("Searching...")
-    x=230
-    y=110
-    
-    while True:
-        ret, img = cap.read()
-        #img = cv2.flip(img, -1)
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(
-            gray,
-            scaleFactor=1.2,
-            minNeighbors=5,
-            minSize=(20,20)
-        )
-
-        for (x,y,w,h) in faces:
-            #print("Face found!")
-            #print(x,y,w,h)
-            #cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
-            #roi_gray = gray[y:y+h, x:x+w]
-            #roi_color = img[y:y+h, x:x+w]   
-            if x in range(190,270):
-                pwm.stop()
-                emotionVideo(cap)
-            elif x > 240:
-                GPIO.output(24, GPIO.LOW)
-                #pwm.start(10)
-                pwm.ChangeFrequency(((x-240)*10)^2)
-
-            elif x < 220:
-                GPIO.output(24, GPIO.HIGH)
-                #pwm.start(10)
-                pwm.ChangeFrequency(((220-x)*10)^2)
-                
-            #if y in range(60,140):
-            #    time.sleep(0.0001)
-            #elif y > 190:
-            #    print("turn up")
-            #    time.sleep(0.0001) 
-            #elif y < 10:
-            #    print("turn down")
-            #    time.sleep(0.01)
+ 
+    def facetrack(self):
+        print("Searching...")        
+        while True:
         
-        #cv2.imshow('video',img)
-        ret, frame = cap.read()
-        rect, face, image = face_detector_video(frame)
-        if np.sum([face]) == 0.0:
-            #pwm.start(10)
-            pwm.ChangeFrequency(1000)
-    
-        k = cv2.waitKey(30) & 0xff
-        if k == 27: # press 'ESC' to quit
-            break
+            # Get still image from camera
+            ret, img = self.cap.read()
             
-#try:
-facetrack()
-#except:
-#    print("Stopping...")
-#finally:
-cap.release()
-#    cv2.destroyAllWindows()
-pwm.stop()
-GPIO.cleanup()
+            x, w, y, h, face = self.face_detect(img)
+            if (face is None): 
+                #self.pwm.stop()
+                continue
+            
+            # Detect emotion from / rotate towards face
+            if x in range(190,270):
+                print("Face in range: ", x)
+                self.pwm.stop()
+                self.emotion_detect(face)
+                #time.sleep(1)
+                #self.rgb.q()
+            elif x > 240:
+                print("Face at right: ", x)                
+                #self.pwm.drive(0, 0, 250, 250)
+                #self.pwmChangeFrequency(((x-240)*10)^2)
+            elif x < 220:
+                print("Face at left: ", x)
+                #self.pwm.drive(1, 1, 250, 250)
+                #self.pwmChangeFrequency(((220-x)*10)^2)    
+    
+    def stop(self):
+        self.pwm.stop()
+    
+    
+if __name__ == "__main__":
+    ft = Facetrack()
+    try:
+        ft.facetrack()
+    except Exception as e:
+        print(e)
+    finally:
+        ft.stop()
+        
