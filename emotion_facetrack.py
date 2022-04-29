@@ -83,7 +83,11 @@ class Facetrack():
                 #self.rgb.q()
             elif x > 240:
                 print("Face at right: ", x)                
-                self.pwm.drive(0, 0, 250, 250)
+                
+                angle = (640-x)/640*45
+                self.pwm.cw(angle, 1000)
+                
+                #self.pwm.drive(0, 0, 250, 250)
                 #self.pwmChangeFrequency(((x-240)*10)^2)
             elif x < 220:
                 print("Face at left: ", x)
