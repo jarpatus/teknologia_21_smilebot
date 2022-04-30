@@ -142,7 +142,7 @@ class PWMDrive():
     # Drive for given number of steps
     def drives(self, m1d, m2d, m1steps, m2steps, m1pps, m2pps=-1, stop=True):
         if (m2pps == -1): m2pps = m1pps
-        accel = 3
+        accel = 4
         self.m1steps = 0
         self.m2steps = 0
         m1freqs = [20000, 10000, 5000, 4000, 2500, 2000, 1250, 1000, 800, 625, 500] # freqs for pigpio -s 2
@@ -178,17 +178,47 @@ class PWMDrive():
 if __name__ == "__main__":
     pwm = PWMDrive()
     try:
-        #pwm.fwd(200, 2000)
-        #time.sleep(0.5)
+        pwm.fwd(200, 2500)
+        time.sleep(0.5)
         #pwm.bwd(200, 2000)
         #time.sleep(0.5)
         #pwm.cw(180, 1250)
-        #time.sleep(0.5)
+        time.sleep(0.1)
         #pwm.ccw(180, 1250)
         #time.sleep(0.5)
-        #pwm.fwd(200, 2000)
-        pwm.drives(1, 1, 120, 120, 2000, 2000, True)
-        time.sleep(3)
+        pwm.bwd(200, 2500)
+        #pwm.drives(1, 1, 120, 120, 2000, 2000, True)
+        #time.sleep(3)
+        
+        #pwm.fwd(200, 2500)
+        #time.sleep(0.5)
+        #pwm.ccw(135, 1250)
+        #time.sleep(0.5)
+        #pwm.fwd(200, 2500)
+        #time.sleep(0.5)
+        #pwm.ccw(135, 1250)
+        #time.sleep(0.5)
+        #pwm.fwd(200, 2500)
+        #time.sleep(0.5)
+        #pwm.drive(1, 1, 1250, 150)
+        
+        #pwm.fwd(200, 2500)
+        #time.sleep(0.05)
+        #pwm.cw(90, 1250)
+        #time.sleep(0.05)
+        #pwm.drive(1, 0, 1250, 2500)
+        #time.sleep(4)
+        #pwm.stop()
+        #time.sleep(0.05)
+        #pwm.drive(1, 0, 2500, 1250)
+        #time.sleep(4)
+        #pwm.stop()
+        #time.sleep(0.05)
+        #pwm.ccw(90, 1250)
+        #time.sleep(0.05)
+        #pwm.fwd(200, 2500)
+        #pwm.stop()
+        
     except Exception as e:
         print(e)
     finally:

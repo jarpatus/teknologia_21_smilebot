@@ -18,8 +18,8 @@ class Facetrack():
         # Settings
         self.width = 640
         self.height = 480
-        #self.maxspeed = 1250
-        self.maxspeed = 2000
+        self.maxspeed = 1250
+        #self.maxspeed = 2000
         self.rangemin = int(self.width/2*0.7)
         self.rangemax = int(self.width/2*1.3)
 
@@ -29,7 +29,6 @@ class Facetrack():
         
         # Initialize RGB matrix
         self.rgb = RGBHappy()
-        self.rgb.q()
 
         # Initialize camera
         self.cap = cv2.VideoCapture(0)
@@ -81,6 +80,7 @@ class Facetrack():
  
     def facetrack(self):
         print("Searching...")        
+        last_detection = 0
         
         while True:
         
@@ -94,10 +94,13 @@ class Facetrack():
             # Get still image from camera
             ret, img = self.cap.read()
             
+            # Detect face
             x, w, y, h, face = self.face_detect(img)
             if face is None: 
-                #self.pwm.stop()
+                if time.time() - last_detection > 5:
+                    self.pwm.drive(0, 0, 500, 500)
                 continue
+            last_detection = time.time() 
             
             # Detect emotion from / rotate towards face
             if x in range(self.rangemin, self.rangemax):
@@ -128,6 +131,10 @@ if __name__ == "__main__":
     ft = Facetrack()
     try:
         input("Press Enter to start...")
+        ft.rgb.q()
+        ft.pwm.fwd(200, 2500)
+        time.sleep(0.1)
+        ft.pwm.bwd(200, 2500)
         ft.facetrack()
     except Exception as e:
         print(e)
