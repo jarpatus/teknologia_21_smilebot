@@ -98,7 +98,7 @@ class PWMDrive():
     # Rotate clockwise
     # Didn't bother to calculate steps properly based on wheel size, just eyeballing it...
     def cw(self, angle, pps):
-        steps = (angle*0.73)/self.step_length 
+        steps = (angle*0.69)/self.step_length 
         print("Rotate ", angle, "degrees @", pps, "pps,", steps, "steps")
         if (steps > 0):
             self.drives(0, 0, steps, steps, pps)
@@ -140,28 +140,31 @@ class PWMDrive():
         
         
     # Drive for given number of steps
-    def drives(self, m1d, m2d, m1steps, m2steps, m1pps, m2pps=-1):       
+    def drives(self, m1d, m2d, m1steps, m2steps, m1pps, m2pps=-1, stop=True):
         if (m2pps == -1): m2pps = m1pps
-        m1freqs = [20000, 10000, 5000, 4000, 2500, 2000, 1250, 1000, 800, 625, 500] # freqs for pigpio -s 2
-        m2freqs = [20000, 10000, 5000, 4000, 2500, 2000, 1250, 1000, 800, 625, 500] # freqs for pigpio -s 2
+        accel = 3
         self.m1steps = 0
         self.m2steps = 0
+        m1freqs = [20000, 10000, 5000, 4000, 2500, 2000, 1250, 1000, 800, 625, 500] # freqs for pigpio -s 2
+        m2freqs = [20000, 10000, 5000, 4000, 2500, 2000, 1250, 1000, 800, 625, 500] # freqs for pigpio -s 2
         m1ppscurrent = m1freqs.pop()
         m2ppscurrent = m2freqs.pop()
         self.drive(m1d, m2d, m1ppscurrent, m2ppscurrent)
-        while True: # While loop is not optinal... better would be doing this in callback functions but my python-fu is not strong enough...
-            print(m1ppscurrent, m2ppscurrent)
-            if (m1ppscurrent < m1pps and len(m1freqs) > 0): 
+        i = 0
+        while True: # While loop is not optinal... better would be doing this in callback functions but my python-fu is not strong enough (pigpio is multithreading!)...
+            #print(m1ppscurrent, m2ppscurrent)
+            if (m1ppscurrent < m1pps and len(m1freqs) > 0 and i % accel == 0): 
                 m1ppscurrent = m1freqs.pop()
                 self.pi.set_PWM_frequency(self.m1_step_pin, m1ppscurrent)
-            if (m2ppscurrent < m2pps and len(m2freqs) > 0): 
+            if (m2ppscurrent < m2pps and len(m2freqs) > 0 and i % accel == 0): 
                 m2ppscurrent = m2freqs.pop()
                 self.pi.set_PWM_frequency(self.m2_step_pin, m2ppscurrent)
             if (self.m1steps >= m1steps or self.m2steps >= m2steps):
                 break
-            time.sleep(0.1)
-            
-        self.stop()
+            time.sleep(0.01)
+            i += 1
+        if stop:
+            self.stop()
 
 
     def m1stepped(self, p1, p2, p3):
@@ -175,15 +178,17 @@ class PWMDrive():
 if __name__ == "__main__":
     pwm = PWMDrive()
     try:
-        pwm.fwd(200, 2000)
-        time.sleep(0.5)
+        #pwm.fwd(200, 2000)
+        #time.sleep(0.5)
         #pwm.bwd(200, 2000)
         #time.sleep(0.5)
         #pwm.cw(180, 1250)
         #time.sleep(0.5)
-        pwm.ccw(180, 1250)
-        time.sleep(0.5)
-        pwm.fwd(200, 2000)
+        #pwm.ccw(180, 1250)
+        #time.sleep(0.5)
+        #pwm.fwd(200, 2000)
+        pwm.drives(1, 1, 120, 120, 2000, 2000, True)
+        time.sleep(3)
     except Exception as e:
         print(e)
     finally:

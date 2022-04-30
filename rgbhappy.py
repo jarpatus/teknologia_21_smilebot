@@ -7,6 +7,10 @@ class RGBHappy():
         self.rr = RGB_Matrix(0X74)
    
   
+    def blank(self):
+        self.rr = RGB_Matrix(0X74)
+    
+    
     def q(self):
         colors = [
             (0,0,0),

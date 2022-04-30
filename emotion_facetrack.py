@@ -13,6 +13,15 @@ class Facetrack():
 
     # Constructor
     def __init__(self):
+        self.start = time.time()
+    
+        # Settings
+        self.width = 640
+        self.height = 480
+        #self.maxspeed = 1250
+        self.maxspeed = 2000
+        self.rangemin = int(self.width/2*0.7)
+        self.rangemax = int(self.width/2*1.3)
 
         # Initialize motors
         self.pwm = PWMDrive()
@@ -24,13 +33,15 @@ class Facetrack():
 
         # Initialize camera
         self.cap = cv2.VideoCapture(0)
-        self.cap.set(3, 640)
-        self.cap.set(4, 480)
+        self.cap.set(3, self.width)
+        self.cap.set(4, self.height)
         
         # Initialize face and emotion recognition 
         self.classifier = load_model('ferjj.h5') # This model has a set of 6 classes
         self.class_labels = {0: 'Angry', 1: 'Fear', 2: 'Happy', 3: 'Neutral', 4: 'Sad', 5: 'Surprise'}
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml') 
+        self.last_emo = ""
+        self.detections = 0
 
 
     # Detects face from given still image (can detect multiple but returns only one)
@@ -53,46 +64,61 @@ class Facetrack():
         roi = np.expand_dims(roi, axis=0)
         preds = self.classifier.predict(roi)[0]
         label = self.class_labels[preds.argmax()]
-        print(label)
-        if label == "Angry": self.rgb.angry()
-        elif label == "Fear": self.rgb.fear()
-        elif label == "Happy": self.rgb.happy()
-        elif label == "Neutral": self.rgb.neutral()
-        elif label == "Sad": self.rgb.sad()
-        elif label == "Surprise": self.rgb.surprise()
+        if (self.last_emo == label):
+            self.detections += 1
+        else:
+            self.detections = 1
+        self.last_emo = label 
+        print(label, self.detections, "detections")
+        if self.detections == 2:
+            if label == "Angry": self.rgb.angry()
+            elif label == "Fear": self.rgb.fear()
+            elif label == "Happy": self.rgb.happy()
+            elif label == "Neutral": self.rgb.neutral()
+            elif label == "Sad": self.rgb.sad()
+            elif label == "Surprise": self.rgb.surprise()
  
  
     def facetrack(self):
         print("Searching...")        
+        
         while True:
+        
+            # Terminate after 3:55
+            if time.time() - self.start > 235:
+                print("Done!")
+                self.pwm.stop()
+                self.rgb.blank()
+                break
         
             # Get still image from camera
             ret, img = self.cap.read()
             
             x, w, y, h, face = self.face_detect(img)
-            if (face is None): 
+            if face is None: 
                 #self.pwm.stop()
                 continue
             
             # Detect emotion from / rotate towards face
-            if x in range(190,270):
-                print("Face in range: ", x)
+            if x in range(self.rangemin, self.rangemax):
+                print("Face in range", self.rangemin, self.rangemax, ": ", x)
                 self.pwm.stop()
                 self.emotion_detect(face)
                 #time.sleep(1)
                 #self.rgb.q()
-            elif x > 240:
-                print("Face at right: ", x)                
-                
-                angle = (640-x)/640*45
-                self.pwm.cw(angle, 1000)
-                
-                #self.pwm.drive(0, 0, 250, 250)
-                #self.pwmChangeFrequency(((x-240)*10)^2)
-            elif x < 220:
+            elif x > self.rangemax:
+                print("Face at right: ", x)                                
+                #angle = int((x-self.width/2)/(self.width/2)*39)
+                #self.pwm.cw(angle, 1000)                
+                speed = int((x-self.width/2)/(self.width/2)*self.maxspeed)
+                self.pwm.drive(0, 0, speed, speed)
+            elif x < self.rangemin:
                 print("Face at left: ", x)
-                self.pwm.drive(1, 1, 250, 250)
-                #self.pwmChangeFrequency(((220-x)*10)^2)    
+                #angle = int((self.width/2-x)/(self.width/2)*39)
+                #self.pwm.ccw(angle, 1000)                
+                speed = int((self.width/2-x)/(self.width/2)*self.maxspeed)
+                self.pwm.drive(1, 1, speed, speed)
+
     
     def stop(self):
         self.pwm.stop()
@@ -101,6 +127,7 @@ class Facetrack():
 if __name__ == "__main__":
     ft = Facetrack()
     try:
+        input("Press Enter to start...")
         ft.facetrack()
     except Exception as e:
         print(e)
