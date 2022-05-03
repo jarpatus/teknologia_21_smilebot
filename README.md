@@ -35,7 +35,7 @@ sudo sudo systemctl enable rgbboot
 git pull
 
 # Execute
-
+./run.sh
 
 # Contribute
 git config --global user.email "you@example.com" \
