@@ -1,13 +1,13 @@
 # Introduction
-Software for Teknologia 21 Amazing Robots -competition robot "smilebot".
+Software for Teknologia 21 Amazing Robots -competition robot "Smilebot".
 
 # Hardware
-Raspberry PI 3/4
+Raspberry PI 3/4 + Waveshare Stepper Motor HAT + SUNFOUNDER RGB 8x8 64 LED Matrix Panel + Camera Module or USB webcam. 
 
-# Software
-OS: Raspbian or equivalent (developed using Raspbian 10.9)
+# OS
+Raspbian or equivalent (developed using Raspbian 10.9). 
 
-For rgbmatrix enable I2C using raspi.config . Disable SPI and 1-Wire if enabled as they may interfere with GPIOs used by motor shield. 
+For LED matrix enable I2C using raspi.config . Disable SPI and 1-Wire as they may interfere with GPIOs used by motor shield. 
 
 # Install 
 sudo apt-get update
@@ -35,7 +35,7 @@ sudo sudo systemctl enable rgbboot
 git pull
 
 # Execute
-...
+
 
 # Contribute
 git config --global user.email "you@example.com" \
